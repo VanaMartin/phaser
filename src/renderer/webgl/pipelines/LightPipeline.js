@@ -239,7 +239,7 @@ var LightPipeline = new Class({
      *
      * @param {number} rotation - The angle of rotation in radians.
      */
-    setNormalMapRotation: function (rotation)
+    setNormalMapRotation: function (rotation, invertX, invertY)
     {
         if (rotation !== this.currentNormalMapRotation || this.vertexCount === 0)
         {
@@ -265,6 +265,19 @@ var LightPipeline = new Class({
                 inverseRotationMatrix[0] = inverseRotationMatrix[4] = 1;
                 inverseRotationMatrix[1] = inverseRotationMatrix[3] = 0;
             }
+
+            // Spatial Inversion for sprites that are flipped
+            if (invertX)
+            {
+                inverseRotationMatrix[0] *= -1;
+                inverseRotationMatrix[1] *=  1;
+            }
+            if (invertY)
+            {
+                inverseRotationMatrix[3] *= -1;
+                inverseRotationMatrix[4] *=  1;
+            }
+
 
             this.setMatrix3fv('uInverseRotationMatrix', false, inverseRotationMatrix);
 
@@ -306,7 +319,6 @@ var LightPipeline = new Class({
         if (gameObject && gameObject.parentContainer)
         {
             var matrix = gameObject.getWorldTransformMatrix(this._tempMatrix, this._tempMatrix2);
-
             rotation = matrix.rotationNormalized;
         }
         else if (gameObject)
@@ -314,7 +326,8 @@ var LightPipeline = new Class({
             rotation = gameObject.rotation;
         }
 
-        this.setNormalMapRotation(rotation);
+        this.setNormalMapRotation(rotation, gameObject.flipX, gameObject.flipY);
+        //this.setNormalMapRotation(rotation);
 
         return 0;
     },
@@ -354,11 +367,13 @@ var LightPipeline = new Class({
         {
             var matrix = gameObject.getWorldTransformMatrix(this._tempMatrix, this._tempMatrix2);
 
-            this.setNormalMapRotation(matrix.rotationNormalized);
+            this.setNormalMapRotation(matrix.rotationNormalized, gameObject.flipX, gameObject.flipY);
+            //this.setNormalMapRotation(matrix.rotationNormalized);
         }
         else
         {
-            this.setNormalMapRotation(gameObject.rotation);
+            this.setNormalMapRotation(gameObject.rotation, gameObject.flipX, gameObject.flipY);
+            //this.setNormalMapRotation(gameObject.rotation);
         }
 
         return 0;
