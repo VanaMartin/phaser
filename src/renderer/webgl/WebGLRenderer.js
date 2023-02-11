@@ -23,7 +23,7 @@ var WebGLSnapshot = require('../snapshot/WebGLSnapshot');
 
 var DEBUG = false;
 
-if (typeof WEBGL_DEBUG)
+if (typeof WEBGL_DEBUG !== "undefined" )
 {
     var SPECTOR = require('phaser3spectorjs');
     DEBUG = true;
